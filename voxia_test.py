@@ -20,6 +20,7 @@ import sys
 import json
 import argparse
 import requests
+from pytictoc import TicToc
 from subprocess import run
 from subprocess import PIPE
 from subprocess import CalledProcessError
@@ -108,8 +109,12 @@ def process_file(audio_fname, speakers_number, config_dict, is_remote_file, gt_f
         upload_to_bucket(file_path, remote_path)
         print("----------------------------------------\n")
 
-    print("Requesting transcription...")
+    print("Waiting for transcription...")
+    t = TicToc()
+    t.tic()
     transcribed_str = request_transcription(remote_path, speakers_number, config_dict)
+    elapsed_time = t.tocvalue()
+    print("Time to transcribe: {:.2f} minutes ({:.2f} seconds)".format(elapsed_time/60, elapsed_time))
 
     out_transcribed_fname = Path(audio_fname).stem + "_transcribed.txt"
     str_to_file(RESULTS_PATH / out_transcribed_fname, transcribed_str)
@@ -129,7 +134,7 @@ def main():
     Test voxia audio transcription with specified audio file. Writes the processed
     text to file and, if a ground-truth is provided, prints the metrics results.
     If audio file is remote (stored at GS bucket), check config.json file.
-    """)
+    """, epilog="NOTE: when uploading, existing files with same path will be overwritten")
 
     # main parser arguments. The order is respected, so change accordingly.
     parser.add_argument('AUDIO_FILE', metavar='<AUDIO_FILE>', type=str,

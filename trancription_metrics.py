@@ -94,10 +94,10 @@ class CompareTexts:
 
         out_str = ""
         # Similatities results
-        out_str += "WER:         {:2f}\n".format(self._get_wer(test_text, gt_text))
-        out_str += "Jaccard:     {:2f}\n".format(self._get_jaccard(test_text, gt_text))
+        out_str += "WER:         {:.2f}\n".format(self._get_wer(test_text, gt_text))
+        out_str += "Jaccard:     {:.2f}\n".format(self._get_jaccard(test_text, gt_text))
         out_str += "Levenshtein: {}\n"   .format(self._get_levenshtein(test_text, gt_text))
-        out_str += "Cosine:      {:2f}\n".format(self._get_cosine(test_text, gt_text))
+        out_str += "Cosine:      {:.2f}\n".format(self._get_cosine(test_text, gt_text))
 
         # Punctuation results
         out_str += '\n'
