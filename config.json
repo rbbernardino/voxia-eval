@@ -1,0 +1,7 @@
+{
+    "voxia_ip": "127.0.0.1",
+    "voxia_port": "3000",
+    "bucket_url": "gs://audiosmppe",
+    "bucket_new_dir": "bernardino",
+    "voxia_similarities": "/home/rodrigo/git/voxia-metrics/Similarities.py"
+}
