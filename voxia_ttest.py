@@ -25,20 +25,49 @@ SCRIPT_DIR = Path(os.path.realpath(__file__)).parent
 CONFIG_FILE = SCRIPT_DIR / "config.json"
 
 
-def process_file(audio_fname, speakers_number, is_remote_file):
+def evaluate_transcription(audio_fname, transcribed_str, gt_fname):
+    return 0
+
+
+def request_transcription(remote_path, speakers_number, config_dict):
     # TODO check if voxia api is up and listening
+
+    # TODO send transcribe request to voxia API
     
+    # TODO handle response (extract text only)
+
+    # TODO return response
+
+    return 0
 
 
+def process_file(audio_fname, speakers_number, config_dict, is_remote_file, gt_fname):
+    remote_path = ""
     #if is_remote_file:
-        # TODO send request to voxia API
+        # TODO assemble remote path
+        # remote_path = ...
+
+    #else: # local file
+        # TODO upload file to bucket using gsutil, loading paths from config dict
+
+        # TODO assemble remote path
+
+    transcribed_str = request_transcription(remote_path, speakers_number, config_dict)
+
+    out_transcribed_fname = Path(audio_fname).stem + "_transcribed.txt"
+    out_trans_file = open(out_transcribed_fname, "w")
+    out_trans_file.write(transcribed_str)
+    out_trans_file.close()
+
+    if(gt_fname):
+        eval_result_str = evaluate_transcription(audio_fname, transcribed_str, gt_fname)
         
-        # TODO handle response (extract text only)
-
-        # TODO 
-
-
-
+        print(eval_result_str)
+        
+        out_eval_fname = Path(audio_fname).stem + "_eval.txt"
+        out_eval_file = open(out_eval_fname, "w")
+        out_eval_file.write(eval_result_str)
+        out_eval_file.close()
 
 
 def main():
@@ -50,21 +79,19 @@ def main():
     """)
 
     # main parser arguments. The order is respected, so change accordingly.
-    parser.add_argument('AUDIO_FILE', type=str, help='filename, may be local or remote (check config.json)')
-    parser.add_argument('SPEAKERS_N', type=str, help='number of speakers')
+    parser.add_argument('AUDIO_FILE', metavar='<AUDIO_FILE>', type=str, help='filename, may be local or remote (check config.json)')
+    parser.add_argument('SPEAKERS_N', metavar='<SPEAKERS_N>', type=str, help='number of speakers')
     parser.add_argument('-r', '--remote', action='store_true', help='AUDIO_FILE is remote (stored at GS)')
-    parser.add_argument('-g', 'GT', type=str, required=False, help='compare result with ground truth text at file GT')
+    parser.add_argument('-g', metavar='<GT_FILE>', type=str, required=False, help='compare result with ground truth text at file GT_FILE')
 
     args = parser.parse_args()
     audio_fname = args.AUDIO_FILE
     speakers_number = args.SPEAKERS_N
-    is_remote_file = args.r
-    if(args.g):
-        gt_file = args.g
+    is_remote_file = args.remote
+    gt_fname = args.g # may be null (=None)
+    config_dict = json.load(open(SCRIPT_DIR / "config.json", "r"))
 
-    # TODO load config
-
-    process_file(audio_fname, speakers_number, is_remote_file)
+    process_file(audio_fname, speakers_number, config_dict, is_remote_file, gt_fname)
 
 
 if __name__ == "__main__":
