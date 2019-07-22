@@ -56,7 +56,7 @@ def upload_to_bucket(file_path: Path, remote_path: str):
         rslt = run(cmd, stderr=sys.stdout)
         rslt.check_returncode()
     except CalledProcessError as err:
-        print('ERROR when uploading file to gs bucket:', rslt.stderr.decode('utf-8'))
+        print('ERROR when uploading file to gs bucket:', rslt.stderr)
         exit(1)
 
 
@@ -90,7 +90,8 @@ def request_transcription(remote_path, speakers_number, config_dict):
         exit(1)
 
     result_json = request_result.json()
-    transcribed_str = result_json['text_summarization'][0]
+    transcribed_str = result_json['full_text']
+    print(transcribed_str)
     return transcribed_str
 
 
@@ -105,7 +106,7 @@ def process_file(audio_fname, speakers_number, config_dict, is_remote_file, gt_f
         print("Local file selected, will upload before processing...")
         print("----------------------------------------")
         file_path = Path(audio_fname)
-        remote_path = config_dict['bucket_url'] + "/" + config_dict['bucket_new_dir'] + file_path.name
+        remote_path = config_dict['bucket_url'] + "/" + config_dict['bucket_new_dir'] + "/" + file_path.name
         upload_to_bucket(file_path, remote_path)
         print("----------------------------------------\n")
 
